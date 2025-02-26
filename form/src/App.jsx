@@ -6,8 +6,9 @@ BONUS
 Aggiungere la possibilità di cancellare ciascun articolo utilizzando un'icona.
 Implementare la funzionalità di modifica del titolo di un post. */
 
-import { useState } from "react"
-const articles = [
+import { useState, useEffect } from 'react';
+
+const initialArticles = [
   "5 Ricette Veloci per Una Cena Salutare e Gustosa",
   "Come Preparare il Pane Fatto in Casa: La Guida Definitiva",
   "Come Sfruttare al Meglio le Spezie in Cucina",
@@ -15,51 +16,76 @@ const articles = [
 ]
 
 function App() {
-  /*array iniziale reattivo */
-  const [title, setTitle] = useState('articles')
-  /*articolo nuovo da aggiungere all'array iniziale */
-  const [newTitle, setNewTitle] = useState('')
 
-  const addTitle = (e) => {
-    e.preventDefault()
-    const article= newTitle.trim()
-    setTitle( [...title, article] )
-    setNewTitle('')
-  }
+  //l'array iniziale reattivo
+  const [articles, setArticles] = useState(initialArticles);
+  //Nuovo task da aggiungere all'array iniziale
+  const [newArticle, setNewArticle] = useState('');
+  //filtro di ricerca degli articoli
+  const [search, setSearch] = useState('')
+  const [filteredArticles, setFilteredArticles] = useState( articles )
 
+
+  const addArticle = (e) => {
+    e.preventDefault();
+    const article = newArticle.trim();
+    setArticles([...articles, article]);
+    setNewArticles('');
+  };
+
+ //lo utilizzo per aggiornare la lista filtrata degli articoli ogni volta che cambia la ricerca (search).
+  useEffect(() => {
+    setFilteredArticles(
+      articles.filter( article => {
+        return article.toLowerCase().includes( search.toLowerCase() )
+      })
+    )
+  }, [ search, articles ]) //questo array mi dice che ogni volta che search o articles cambia, lo useEffect verrà eseguito.
 
   return (
     <>
-    <div className="container">
-      <h1>I nostri articoli</h1>
-      
-      <ul>
-        {
-          articles.map((article, index) => {
-            return (
-            <li key={index}>{article}</li>
-          )
-        })
-        }
-      </ul>
 
-      {/*form per aggiungere un nuovo articolo */}
-      <form onSubmit={addTitle}>
-        <h4>Aggiungi il tuo articolo</h4>
-        <input type="text"
-         className="form-control" 
-         placeholder="Aggiungi qui il tuo articolo"
-          value={newTitle} 
-          onChange={(e) => setNewTitle(e.target.value)}
+      <div className="container">
+        <h1>I nostri articoli</h1>
+
+        <div>
+          <input 
+            type="text"
+            className='form-control'
+            placeholder='cerca articolo'
+            value={search}
+            onChange={ (e) => setSearch(e.target.value) }
           />
-        <button>Aggiungi</button>
-      </form>
+        </div>
 
-      
-    </div>
-      
+
+        <ul className="list-group">
+          {filteredArticles.map((filteredArticle, index) => {
+            return (
+              <li key={index} className="list-group-item">
+                {filteredArticle}
+
+                
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* //form per il nuovo articolo */}
+        <form onSubmit={addArticle}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Scrivi qui il tuo articolo"
+            value={newArticle}
+            onChange={(e) => setNewArticle(e.target.value)}
+          />
+
+          <button className="btn-add">Aggiungi</button>
+        </form>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
