@@ -42,6 +42,15 @@ function App() {
     )
   }, [ search, articles ]) //questo array mi dice che ogni volta che search o articles cambia, lo useEffect verrà eseguito.
 
+  //la funzione rimuove un articolo dall'array articles in base al suo indice
+  const removeArticle = (articleIndex) => {
+    
+    const articlesAfterRemoval = articles.filter(
+      (element, index) => index !== articleIndex
+    );
+    return setArticles(articlesAfterRemoval);
+  };
+
   return (
     <>
 
@@ -65,6 +74,12 @@ function App() {
               <li key={index} className="list-group-item">
                 {filteredArticle}
 
+                <button
+                  className="btn-remove"
+                  onClick={() => removeArticle(index)}
+                >
+                  X
+                </button>
                 
               </li>
             );
